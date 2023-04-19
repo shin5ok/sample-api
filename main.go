@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -36,7 +37,7 @@ func main() {
 			errorRender(w, r, http.StatusInternalServerError, err)
 			return
 		}
-		render.PlainText(w, r, host)
+		render.HTML(w, r, fmt.Sprintf("<h1>My name is %s</h1>", host))
 	})
 
 	if servicePort == "" {
