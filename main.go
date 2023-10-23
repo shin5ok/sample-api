@@ -12,15 +12,19 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httplog"
 	"github.com/go-chi/render"
+	"github.com/rs/zerolog"
 )
 
-var appName = "myapp"
-
-var servicePort = os.Getenv("PORT")
+var (
+	oplog       zerolog.Logger
+	appName     = "myapp"
+	servicePort = os.Getenv("PORT")
+)
 
 func main() {
 
-	oplog := httplog.LogEntry(context.Background())
+	oplog = httplog.LogEntry(context.Background())
+
 	/* jsonify logging */
 	httpLogger := httplog.NewLogger(
 		appName,
@@ -31,6 +35,8 @@ func main() {
 			Concise:        true,
 		})
 
+	oplog.Debug().Msg("logger initialized")
+
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Recoverer)
@@ -40,6 +46,7 @@ func main() {
 	r.Get("/ping", pingPong)
 
 	r.Get("/hostname", func(w http.ResponseWriter, r *http.Request) {
+		oplog.Info().Str("path", "/hostname").Send()
 		host, err := os.Hostname()
 		if err != nil {
 			errorRender(w, r, http.StatusInternalServerError, err)
@@ -52,6 +59,7 @@ func main() {
 		servicePort = "8080"
 	}
 
+	oplog.Debug().Msg("starting api listening on port " + servicePort)
 	if err := http.ListenAndServe(":"+servicePort, r); err != nil {
 		oplog.Err(err)
 	}
@@ -64,6 +72,7 @@ var errorRender = func(w http.ResponseWriter, r *http.Request, httpCode int, err
 }
 
 func pingPong(w http.ResponseWriter, r *http.Request) {
+	oplog.Info().Str("path", "/ping").Send()
 	render.Status(r, http.StatusOK)
 	render.PlainText(w, r, "Pong\n")
 }
