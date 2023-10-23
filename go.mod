@@ -1,9 +1,11 @@
 module sample-api
 
-go 1.18
+go 1.21
+
+toolchain go1.21.3
 
 require (
-	github.com/go-chi/chi/v5 v5.0.8
+	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/httplog v0.3.0
 	github.com/go-chi/render v1.0.2
 )

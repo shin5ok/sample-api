@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
@@ -21,7 +22,14 @@ func main() {
 
 	oplog := httplog.LogEntry(context.Background())
 	/* jsonify logging */
-	httpLogger := httplog.NewLogger(appName, httplog.Options{JSON: true, LevelFieldName: "severity", Concise: true})
+	httpLogger := httplog.NewLogger(
+		appName,
+		httplog.Options{
+			JSON:           true,
+			LogLevel:       slog.LevelInfo.String(),
+			LevelFieldName: "severity",
+			Concise:        true,
+		})
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
