@@ -67,6 +67,7 @@ func main() {
 }
 
 var errorRender = func(w http.ResponseWriter, r *http.Request, httpCode int, err error) {
+	oplog.Error().Str("path", r.URL.Path).Send()
 	render.Status(r, httpCode)
 	render.JSON(w, r, map[string]any{"ERROR": err.Error()})
 }
